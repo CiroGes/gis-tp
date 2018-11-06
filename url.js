@@ -1,0 +1,1 @@
+var URL_OGC = '/cgi-bin/qgis_mapserv.fcgi?map=/home/user/Desktop/TP Integrador/tp-integrador.qgz'
