@@ -1,0 +1,36 @@
+#map {
+    height: 100%;	/* alto del elemento = 400px */
+    width: 100%;	/* ancho del elemento = 100% de su elemento contenedor */
+    border: none; /* borde 1px */
+    position: absolute;
+    z-index: 0;
+}
+
+#nav_bar {
+    position: absolute;
+    margin-top: 30px;
+    margin-bottom: 0px;
+    left: 30px;
+    width: 50%;
+    z-index: 100;
+}
+
+.logo {
+    font-weight: bold;
+}
+
+.red {
+    color: #f44336;
+}
+
+.yellow {
+    color: #ffc107;
+}
+
+.green {
+    color: #4caf50;
+}
+
+.blue {
+    color: #0091ea;
+}
