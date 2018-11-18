@@ -1,4 +1,7 @@
 // SCRIPT que crea el mapa y sus capas
+//
+// URL del servicio
+var url = 'http://osgeolive/cgi-bin/qgis_mapserv.fcgi?map=/home/user/Desktop/TP Integrador/tp-integrador.qgz'
 
 // Array que contiene todas las capas del servidor WMS
 var layers_op = [];
@@ -6,10 +9,10 @@ var layers_op = [];
 // Instancia de Open Layers
 var map;
 
-fetch(URL_OGC + '&SERVICE=WMS&REQUEST=GetCapabilities').then(function(response) {
-    return response.text();
-}).then(function(text) {
-    let layers = new ol.format.WMSCapabilities().read(text).Capability.Layer.Layer;
+fetch(url + '&SERVICE=WMS&REQUEST=GetCapabilities')
+.then(response => response.text())
+.then(function(data) {
+    let layers = new ol.format.WMSCapabilities().read(data).Capability.Layer.Layer;
 
     $.each(layers, function(index, value) {
         layers_op.push(
@@ -18,7 +21,7 @@ fetch(URL_OGC + '&SERVICE=WMS&REQUEST=GetCapabilities').then(function(response) 
                 //capa desactivada por defecto
                 visible: false,
                 source: new ol.source.ImageWMS({
-                    url: URL_OGC,
+                    url: url,
                     params: {
                         LAYERS: value.Name
                     }
