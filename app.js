@@ -1,7 +1,7 @@
 // SCRIPT que crea el mapa y sus capas
 //
 // URL del servicio
-var url = 'http://osgeolive/cgi-bin/qgis_mapserv.fcgi?map=/home/user/Desktop/TP Integrador/tp-integrador.qgz'
+var url = 'http://osgeolive/cgi-bin/qgis_mapserv.fcgi?map=/home/user/Desktop/TP Integrador/tp-integrador.qgz';
 
 // Array que contiene todas las capas del servidor WMS
 var layers_op = [];
@@ -50,7 +50,7 @@ var map;
                 zoom: 6
             })
         });
-    });
+    }); // End fetch
 
     let zoom_ctrl = $('.ol-zoom');
 
