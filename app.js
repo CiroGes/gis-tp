@@ -9,6 +9,19 @@ var layers_op = [];
 // Instancia de Open Layers
 var map;
 
+// View del mapa
+var view;
+
+// Capa de prueba
+var red_vial;
+
+// Funcion que busca una capa por propiedad dada
+var findLayerBy = function(property, value) {
+    return layers_op.find(function(element) {
+        return element.getProperties()[property] === value;
+    });
+};
+
 // async IIFE que construye la instancia del mapa y demás hierbas
 (async function() {
     map = await fetch(url + '&SERVICE=WMS&REQUEST=GetCapabilities')
@@ -44,13 +57,49 @@ var map;
                     })
                 })
             ].concat(layers_op),
-            view: new ol.View({
+            view: view = new ol.View({
                 projection: 'EPSG:4326',
                 center: [-59, -27.5],
                 zoom: 6
             })
         });
     }); // End fetch
+
+    // Capa de prueba
+    red_vial = findLayerBy('title', 'red_vial');
+    red_vial.setVisible(true);
+
+    map.on('singleclick', function(event) {
+        let viewResolution = (view.getResolution());
+
+        let url = findLayerBy('visible', true).getSource().getGetFeatureInfoUrl(
+            event.coordinate,
+            viewResolution,
+            'EPSG:4326',
+            {
+                'INFO_FORMAT': 'text/xml'
+            }
+        );
+
+        if (url) {
+            fetch(url).then(response => response.text()).then(function(data) {
+                console.log('URL: ' + url);
+                console.log(data);
+                console.log('---------------------------------------------');
+
+                // let results = new ol.format.OSMXML().readFeatures(data);
+                // console.log(results);
+
+                let parser = new DOMParser();
+                let xmlDoc = parser.parseFromString(data, "text/xml");
+                console.log(xmlDoc);
+
+                // let win = window.open(url, '_blank');
+                // win.focus();
+                // console.log('COORDENADAS: ' + event.coordinate);
+            });
+        }
+    });
 
     let zoom_ctrl = $('.ol-zoom');
 

@@ -59,7 +59,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Main Layers <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="#" id="red_vial" class="main-layers">
-                                <span class="red logo">Red Vial</span>
+                                <span class="blue logo">Red Vial</span>
                             </a></li>
                             <li><a href="#" id="espejo_de_agua_hid" class="main-layers">
                                 <span class="red logo">Espejos de Agua</span>
@@ -91,25 +91,6 @@
                         </a>
                     </li>
                 </ul>
-                <!-- <form class="navbar-form navbar-left">
-                    <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Search">
-                    </div>
-                    <button type="submit" class="btn btn-default">Submit</button>
-                </form> -->
-                <!-- <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#">Link</a></li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">Action</a></li>
-                            <li><a href="#">Another action</a></li>
-                            <li><a href="#">Something else here</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="#">Separated link</a></li>
-                        </ul>
-                    </li>
-                </ul> -->
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
     </nav>
@@ -136,19 +117,53 @@
             });
 
             selectInteraction.on('boxend', function() {
-                console.log('boxend', this.getGeometry().getCoordinates());
+                // Template string example
+                // `Hello ${name}, how are you ${time}?`
+
+                let coordinates = this.getGeometry().getCoordinates();
+                let wktCoordinates = wktFormat(coordinates);
+                console.log('boxend', coordinates);
+                console.log(wktCoordinates);
+
+                let layer_title = findLayerBy('visible', true).getProperties().title;
+
+                let url_features = url + `&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&QUERY_LAYERS=${layer_title}&INFO_FORMAT=text/xml&CRS=EPSG%3A4326&FEATURE_COUNT=10&FILTER_GEOM=${wktCoordinates}`;
+
+                fetch(url_features).then(response => response.text()).then(function(data) {
+                    console.log('URL: ' + url_features);
+                    console.log(data);
+                    console.log('---------------------------------------------');
+
+                    let parser = new DOMParser();
+                    let xmlDoc = parser.parseFromString(data, "text/xml");
+                    console.log(xmlDoc);
+                    
+                    // let win = window.open(url, '_blank');
+                    // win.focus();
+                });
             });
 
         });
 
         // Funcion que habilita/deshabilita una capa con el nombre dado
         var toggleLayerVisibility = function(layer_title) {
-            let layer = layers_op.find(function(element) {
-                return element.O.title === layer_title;
-            });
+            let layer = findLayerBy('title', layer_title);
 
             layer.setVisible(!layer.getVisible());
             return layer.getVisible();
+        };
+
+        // Funcion que formatea un poligono a WKT
+        var wktFormat = function(coordinates) {
+            let wkt = 'POLYGON((';
+
+    		for (let i = 0; i < coordinates[0].length - 1; i++) {
+    			wkt += coordinates[0][i][0] + ' ' + coordinates[0][i][1] + ',';
+    		}
+
+    		wkt += coordinates[0][0][0] + ' ' + coordinates[0][0][1]+'))';
+
+            return wkt;
         };
 
         // Funcion que habilita/deshabilita controles
@@ -171,22 +186,6 @@
                 })
             })
         });
-
-        // var toggleText = function(element, layer_visibility) {
-        //     if (layer_visibility) {
-        //         element.addClass('text-primary').addClass('logo');
-        //     } else {
-        //         element.removeClass('text-primary').removeClass('logo');
-        //     }
-        // }
-
-        // var main_layers = [
-        //     'red_vial',
-        //     'espejo_de_agua_hid',
-        //     'veg_arborea',
-        //     'veg_cultivos',
-        //     'veg_hidrofila'
-        // ];
     </script>
 </body>
 </html>
