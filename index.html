@@ -19,6 +19,9 @@
     <!-- tag script que incluye el archivo .js que contiene la libreria -->
     <script src="ol4/build/ol.js" type="text/javascript"></script>
 
+    <!-- script para realizar mediciones -->
+    <script src="measure.js" type="text/javascript"></script>
+
     <!-- script encargado de instanciar OpenLayers -->
     <script src="app.js" type="text/javascript"></script>
 
@@ -41,6 +44,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="#">
+                    <span class="fas fa-map"></span>
                     <span class="blue logo">P</span>
                     <span class="red logo">i</span>
                     <span class="yellow logo">b</span>
@@ -86,7 +90,12 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" id="ruler-ctrl" class="select-ctrl" title="Medición">
+                        <a href="#" id="measure-length-ctrl" class="select-ctrl" title="Medir distancia">
+                            <span class="fas fa-ruler-horizontal"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="measure-area-ctrl" class="select-ctrl" title="Medir área">
                             <span class="fas fa-ruler-combined"></span>
                         </a>
                     </li>
@@ -168,10 +177,16 @@
 
         // Funcion que habilita/deshabilita controles
         var seleccionarControl = function(element) {
-            if (element === 'box-ctrl') {
+            if (element === 'box-ctrl') {    // Consulta por Polígono
+                map.removeInteraction(draw);
                 map.addInteraction(selectInteraction);
-            } else if (element === 'nav-ctrl') {
+            } else if (element === 'nav-ctrl') {    // Navegación
+                map.removeInteraction(draw);
                 map.removeInteraction(selectInteraction);
+            } else if (element === 'measure-length-ctrl' || element === 'measure-area-ctrl') {    // Medición de distancias y áreas
+                map.removeInteraction(draw);
+                map.removeInteraction(selectInteraction);
+                addInteraction();
             }
 
             console.log(element);

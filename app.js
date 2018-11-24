@@ -45,7 +45,10 @@ var findLayerBy = function(property, value) {
             );
         }
 
-        // definicion del mapa y su capa
+        // Agrego capa para dibujar medidas
+        layers_op.push(vector);
+
+        // Definición del mapa y su capa
         return new ol.Map({
             target: 'map',
             layers: [
@@ -69,7 +72,23 @@ var findLayerBy = function(property, value) {
     red_vial = findLayerBy('title', 'red_vial');
     red_vial.setVisible(true);
 
+
+    // Evento que llama a función que maneja el movimiento del puntero
+    map.on('pointermove', pointerMoveHandler);
+
+    // Llamo a la función para que no de error la primera vez
+    createHelpTooltip();
+
+    // Evento que destruye el tooltip cuando el mouse sale del mapa
+    map.getViewport().addEventListener('mouseout', function() {
+        helpTooltipElement.classList.add('hidden');
+    });
+
     map.on('singleclick', function(event) {
+        if (!$('#nav-ctrl').parent().hasClass('active')) {
+            return;
+        }
+
         let viewResolution = (view.getResolution());
 
         let url = findLayerBy('visible', true).getSource().getGetFeatureInfoUrl(
