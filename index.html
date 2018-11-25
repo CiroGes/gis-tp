@@ -125,28 +125,29 @@
                 seleccionarControl($(this).attr('id'));
             });
 
-            selectInteraction.on('boxend', function() {
-                // Template string example
-                // `Hello ${name}, how are you ${time}?`
-
+            select_interaction.on('boxend', function() {
                 let coordinates = this.getGeometry().getCoordinates();
-                let wktCoordinates = wktFormat(coordinates);
+                let wkt_coordinates = wktFormat(coordinates);
                 console.log('boxend', coordinates);
-                console.log(wktCoordinates);
+                console.log(wkt_coordinates);
 
                 let layer_title = findLayerBy('visible', true).getProperties().title;
 
-                let url_features = url + `&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&QUERY_LAYERS=${layer_title}&INFO_FORMAT=text/xml&CRS=EPSG%3A4326&FEATURE_COUNT=10&FILTER_GEOM=${wktCoordinates}`;
+                // Template string example
+                // `Hello ${name}, how are you ${time}?`
+                let url_features = url + `&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&QUERY_LAYERS=${layer_title}&INFO_FORMAT=text/xml&CRS=EPSG%3A4326&FEATURE_COUNT=10&FILTER_GEOM=${wkt_coordinates}`;
 
-                fetch(url_features).then(response => response.text()).then(function(data) {
+                fetch(url_features)
+                .then(response => response.text())
+                .then(data => {
                     console.log('URL: ' + url_features);
                     console.log(data);
                     console.log('---------------------------------------------');
 
                     let parser = new DOMParser();
-                    let xmlDoc = parser.parseFromString(data, "text/xml");
-                    console.log(xmlDoc);
-                    
+                    let xml_doc = parser.parseFromString(data, "text/xml");
+                    console.log(xml_doc);
+
                     // let win = window.open(url, '_blank');
                     // win.focus();
                 });
@@ -179,13 +180,13 @@
         var seleccionarControl = function(element) {
             if (element === 'box-ctrl') {    // Consulta por Polígono
                 map.removeInteraction(draw);
-                map.addInteraction(selectInteraction);
+                map.addInteraction(select_interaction);
             } else if (element === 'nav-ctrl') {    // Navegación
                 map.removeInteraction(draw);
-                map.removeInteraction(selectInteraction);
+                map.removeInteraction(select_interaction);
             } else if (element === 'measure-length-ctrl' || element === 'measure-area-ctrl') {    // Medición de distancias y áreas
                 map.removeInteraction(draw);
-                map.removeInteraction(selectInteraction);
+                map.removeInteraction(select_interaction);
                 addInteraction();
             }
 
@@ -193,7 +194,7 @@
         };
 
         // Definición de una interacción
-        var selectInteraction = new ol.interaction.DragBox({
+        var select_interaction = new ol.interaction.DragBox({
             condition: ol.events.condition.always, //noModifierKeys
             style: new ol.style.Style({
                 stroke: new ol.style.Stroke({

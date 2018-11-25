@@ -48,8 +48,15 @@ var findLayerBy = function(property, value) {
         // Agrego capa para dibujar medidas
         layers_op.push(vector);
 
+        // Definición de barra de escala
+        let scale_line_ctrl = new ol.control.ScaleLine();
+        scale_line_ctrl.setUnits('metric');
+
         // Definición del mapa y su capa
         return new ol.Map({
+            controls: ol.control.defaults().extend([
+                scale_line_ctrl
+            ]),
             target: 'map',
             layers: [
                 new ol.layer.Tile({
@@ -89,11 +96,11 @@ var findLayerBy = function(property, value) {
             return;
         }
 
-        let viewResolution = (view.getResolution());
+        let view_resolution = (view.getResolution());
 
         let url = findLayerBy('visible', true).getSource().getGetFeatureInfoUrl(
             event.coordinate,
-            viewResolution,
+            view_resolution,
             'EPSG:4326',
             {
                 'INFO_FORMAT': 'text/xml'
@@ -110,8 +117,8 @@ var findLayerBy = function(property, value) {
                 // console.log(results);
 
                 let parser = new DOMParser();
-                let xmlDoc = parser.parseFromString(data, "text/xml");
-                console.log(xmlDoc);
+                let xml_doc = parser.parseFromString(data, "text/xml");
+                console.log(xml_doc);
 
                 // let win = window.open(url, '_blank');
                 // win.focus();
