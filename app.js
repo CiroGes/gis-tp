@@ -4,7 +4,7 @@
 var url = 'http://osgeolive/cgi-bin/qgis_mapserv.fcgi?map=/home/user/Desktop/TP Integrador/tp-integrador.qgz';
 
 // Array que contiene todas las capas del servidor WMS
-var layers_op = [];
+var layers_ol = [];
 
 // Instancia de Open Layers
 var map;
@@ -17,7 +17,7 @@ var red_vial;
 
 // Funcion que busca una capa por propiedad dada
 var findLayerBy = function(property, value) {
-    return layers_op.find(function(element) {
+    return layers_ol.find(function(element) {
         return element.getProperties()[property] === value;
     });
 };
@@ -30,9 +30,10 @@ var findLayerBy = function(property, value) {
         let layers = new ol.format.WMSCapabilities().read(data).Capability.Layer.Layer;
 
         for (let layer of layers) {
-            layers_op.push(
+            layers_ol.push(
                 new ol.layer.Image({
                     title: layer.Title,
+                    name: layer.Name,
                     //capa desactivada por defecto
                     visible: false,
                     source: new ol.source.ImageWMS({
@@ -46,7 +47,7 @@ var findLayerBy = function(property, value) {
         }
 
         // Agrego capa para dibujar medidas
-        layers_op.push(vector);
+        layers_ol.push(vector);
 
         // Definición de barra de escala
         let scale_line_ctrl = new ol.control.ScaleLine();
@@ -66,7 +67,7 @@ var findLayerBy = function(property, value) {
                         params: {'LAYERS': 'ne:ne'}
                     })
                 })
-            ].concat(layers_op),
+            ].concat(layers_ol),
             view: view = new ol.View({
                 projection: 'EPSG:4326',
                 center: [-59, -27.5],
@@ -76,9 +77,17 @@ var findLayerBy = function(property, value) {
     }); // End fetch
 
     // Capa de prueba
-    red_vial = findLayerBy('title', 'red_vial');
+    red_vial = findLayerBy('name', 'red_vial');
     red_vial.setVisible(true);
 
+    // Carga de capas en listado
+    for (let layer of layers_ol) {
+        let layer_title = layer.getProperties().title;
+        let layer_name = layer.getProperties().name;
+        $('#layers-list').append(
+            `<a href="#" id="${layer_name}" class="list-group-item layer-item">${layer_title}</a>`
+        );
+    }
 
     // Evento que llama a función que maneja el movimiento del puntero
     map.on('pointermove', pointerMoveHandler);

@@ -3,6 +3,8 @@ var source = new ol.source.Vector();
 
 // Capa vectorial donde se dibujan las líneas de medición
 var vector = new ol.layer.Vector({
+    title: 'Mediciones',
+    name: 'mediciones',
     source: source,
     style: new ol.style.Style({
         fill: new ol.style.Fill({

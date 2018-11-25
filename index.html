@@ -81,22 +81,22 @@
                     </li>
                     <li class="active">
                         <a href="#" id="nav-ctrl" class="select-ctrl" title="Navegación">
-                            <span class="fas fa-hand-paper"></span>
+                            <span class="fas fa-lg fa-hand-paper"></span>
                         </a>
                     </li>
                     <li>
                         <a href="#" id="box-ctrl" class="select-ctrl" title="Consulta">
-                            <span class="fas fa-vector-square"></span>
+                            <span class="fas fa-lg fa-vector-square"></span>
                         </a>
                     </li>
                     <li>
                         <a href="#" id="measure-length-ctrl" class="select-ctrl" title="Medir distancia">
-                            <span class="fas fa-ruler-horizontal"></span>
+                            <span class="fas fa-lg fa-ruler-horizontal"></span>
                         </a>
                     </li>
                     <li>
                         <a href="#" id="measure-area-ctrl" class="select-ctrl" title="Medir área">
-                            <span class="fas fa-ruler-combined"></span>
+                            <span class="fas fa-lg fa-ruler-combined"></span>
                         </a>
                     </li>
                 </ul>
@@ -104,11 +104,42 @@
         </div><!-- /.container-fluid -->
     </nav>
 
-    <!-- DIV que contiene el mapa -->
-    <div id="map"></div>
+    <!-- Barra lateral con lista de capas -->
+    <div class="col-sm-3 col-md-2 sidebar" style="z-index: 100; margin-top: 100px; padding-left: 30px;">
+        <div class="mini-submenu" style="background-color: #fff; border: 1px solid #ddd;">
+            <span class="fas fa-lg fa-layer-group" style="margin-left: 2px; margin-top: 4px; color: #555;"></span>
+        </div>
+        <div class="list-group" style="display: none;">
+            <span href="#" class="list-group-item active text-center">
+                <b>Listado de Capas</b>
+                <span class="pull-right" id="slide-submenu">
+                    <i class="fa fa-times"></i>
+                </span>
+            </span>
+            <div id="layers-list" style="height: 500px; overflow-y: scroll;">
+                <!-- Acá se carga el listado de capas -->
+            </div>
+        </div>
+    </div>
+
+
+    <div id="map">
+        <!-- DIV que contiene el mapa -->
+    </div>
+
 
     <script type="text/javascript">
         $(document).ready(function() {
+            $('#slide-submenu').on('click',function() {
+                $(this).closest('.list-group').fadeOut('slide',function(){
+                    $('.mini-submenu').fadeIn();
+                });
+            });
+
+            $('.mini-submenu').on('click',function(){
+                $(this).next('.list-group').toggle('slide');
+                $('.mini-submenu').hide();
+            })
 
             $('.main-layers').click(function() {
                 // Habilito/Deshabilito una capa
@@ -125,17 +156,22 @@
                 seleccionarControl($(this).attr('id'));
             });
 
+            $('.layer-item').click(function() {
+                let layer_name = $(this).attr('id');
+                toggleLayerVisibility(layer_name);
+            });
+
             select_interaction.on('boxend', function() {
                 let coordinates = this.getGeometry().getCoordinates();
                 let wkt_coordinates = wktFormat(coordinates);
                 console.log('boxend', coordinates);
                 console.log(wkt_coordinates);
 
-                let layer_title = findLayerBy('visible', true).getProperties().title;
+                let layer_name = findLayerBy('visible', true).getProperties().name;
 
                 // Template string example
                 // `Hello ${name}, how are you ${time}?`
-                let url_features = url + `&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&QUERY_LAYERS=${layer_title}&INFO_FORMAT=text/xml&CRS=EPSG%3A4326&FEATURE_COUNT=10&FILTER_GEOM=${wkt_coordinates}`;
+                let url_features = url + `&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&QUERY_LAYERS=${layer_name}&INFO_FORMAT=text/xml&CRS=EPSG%3A4326&FEATURE_COUNT=10&FILTER_GEOM=${wkt_coordinates}`;
 
                 fetch(url_features)
                 .then(response => response.text())
@@ -152,16 +188,17 @@
                     // win.focus();
                 });
             });
+        }); // Fin $(document).ready()
 
-        });
 
         // Funcion que habilita/deshabilita una capa con el nombre dado
-        var toggleLayerVisibility = function(layer_title) {
-            let layer = findLayerBy('title', layer_title);
+        var toggleLayerVisibility = function(layer_name) {
+            let layer = findLayerBy('name', layer_name);
 
             layer.setVisible(!layer.getVisible());
             return layer.getVisible();
         };
+
 
         // Funcion que formatea un poligono a WKT
         var wktFormat = function(coordinates) {
@@ -175,6 +212,7 @@
 
             return wkt;
         };
+
 
         // Funcion que habilita/deshabilita controles
         var seleccionarControl = function(element) {
@@ -192,6 +230,15 @@
 
             console.log(element);
         };
+
+
+        // Función que habilita/deshabilita legenda de una capa
+        var toggleLegend = function(layer_name) {
+            let url_legend = url + `&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=${layer_name}`;
+
+            fetch(url_legend);
+        }
+
 
         // Definición de una interacción
         var select_interaction = new ol.interaction.DragBox({

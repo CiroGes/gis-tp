@@ -32,3 +32,13 @@ http://osgeolive/cgi-bin/qgis_mapserv.fcgi?map=/home/user/Desktop/TP Integrador/
 ------------------------------------------------------------------------------------------------------
 
 http://osgeolive/cgi-bin/qgis_mapserv.fcgi?map=/home/user/Desktop/TP Integrador/tp-integrador.qgz&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&QUERY_LAYERS=red_vial&INFO_FORMAT=text/xml&FILTER_GEOM=POLYGON((-59.90499877929688 -27.222595214843793,-59.90499877929688 -27.359924316406293,-59.471725463867195 -27.359924316406293,-59.471725463867195 -27.222595214843793,-59.90499877929688 -27.222595214843793))&CRS=EPSG%3A4326&FEATURE_COUNT=10
+
+------------------------------------------------------------------------------------------------------
+
+http://osgeolive/cgi-bin/qgis_mapserv.fcgi
+?map=/home/user/Desktop/TP Integrador/tp-integrador.qgz
+&SERVICE=WMS
+&VERSION=1.3.0
+&REQUEST=GetLegendGraphic
+&FORMAT=image/png
+&LAYER=actividades_agropecuarias
