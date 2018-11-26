@@ -34,8 +34,10 @@ var findLayerBy = function(property, value) {
                 new ol.layer.Image({
                     title: layer.Title,
                     name: layer.Name,
-                    //capa desactivada por defecto
+                    // Capas desactivadas por defecto
                     visible: false,
+                    // Agrego concepto de 'capa activa'
+                    active: false,
                     source: new ol.source.ImageWMS({
                         url: url,
                         params: {
@@ -76,18 +78,36 @@ var findLayerBy = function(property, value) {
         });
     }); // End fetch
 
+    // Agrego métodos al prototype de capas para obtener/setear capa activa
+    ol.layer.Image.prototype.setActive = function(active) {
+        return this.O.active = active;
+    };
+    ol.layer.Image.prototype.getActive = function() {
+        return this.O.active;
+    };
+
     // Capa de prueba
     red_vial = findLayerBy('name', 'red_vial');
     red_vial.setVisible(true);
+    red_vial.setActive(true);
 
     // Carga de capas en listado
     for (let layer of layers_ol) {
         let layer_title = layer.getProperties().title;
         let layer_name = layer.getProperties().name;
         $('#layers-list').append(
-            `<a href="#" id="${layer_name}" class="list-group-item layer-item">${layer_title}</a>`
+            `<a href="#" id="${layer_name}" class="list-group-item layer-item">
+                ${layer_title}
+            </a>`
+            // <label class="switch">
+            // <input type="checkbox">
+            // <span class="slider"></span>
+            // </label>
         );
     }
+
+    // Marco la capa Red Vial como activa en la lista
+    $('#layers-list a#red_vial').addClass('active');
 
     // Evento que llama a función que maneja el movimiento del puntero
     map.on('pointermove', pointerMoveHandler);

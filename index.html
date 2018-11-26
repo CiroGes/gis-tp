@@ -119,6 +119,9 @@
             <div id="layers-list" style="height: 500px; overflow-y: scroll;">
                 <!-- Acá se carga el listado de capas -->
             </div>
+            <div class="list-group-item">
+                <img id="layer-legend" src="http://osgeolive/cgi-bin/qgis_mapserv.fcgi?map=/home/user/Desktop/TP Integrador/tp-integrador.qgz&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=red_vial">
+            </div>
         </div>
     </div>
 
@@ -158,7 +161,13 @@
 
             $('.layer-item').click(function() {
                 let layer_name = $(this).attr('id');
+
                 toggleLayerVisibility(layer_name);
+                toggleLayerActivity(layer_name);
+                toggleLegend(layer_name);
+
+                $('#layers-list').find('a.active').removeClass('active');
+                $(this).addClass('active');
             });
 
             select_interaction.on('boxend', function() {
@@ -200,6 +209,16 @@
         };
 
 
+        // Funcion que cambia la capa activa
+        var toggleLayerActivity = function(layer_name) {
+            // Primero desactivo la que esté activada
+            findLayerBy('active', true).setActive(false);
+            let layer = findLayerBy('name', layer_name);
+
+            return layer.setActive(!layer.getActive());
+        };
+
+
         // Funcion que formatea un poligono a WKT
         var wktFormat = function(coordinates) {
             let wkt = 'POLYGON((';
@@ -235,8 +254,7 @@
         // Función que habilita/deshabilita legenda de una capa
         var toggleLegend = function(layer_name) {
             let url_legend = url + `&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=${layer_name}`;
-
-            fetch(url_legend);
+            $('#layer-legend').attr('src', url_legend);
         }
 
 
