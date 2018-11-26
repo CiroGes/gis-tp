@@ -96,18 +96,23 @@ var findLayerBy = function(property, value) {
         let layer_title = layer.getProperties().title;
         let layer_name = layer.getProperties().name;
         $('#layers-list').append(
-            `<a href="#" id="${layer_name}" class="list-group-item layer-item">
-                ${layer_title}
-            </a>`
-            // <label class="switch">
-            // <input type="checkbox">
-            // <span class="slider"></span>
-            // </label>
+            `<li class="list-group-item row" style="margin-left: 0px; margin-right: 0px;">
+                <a href="#" id="${layer_name}" class="list-group-item layer-item col-md-10" style="border: 0; padding: 0;">
+                    ${layer_title}
+                </a>
+                <div class="checkbox checbox-switch switch-primary col-md-2" style="margin-top: 0px; margin-bottom: 0px;">
+                    <label>
+                        <input type="checkbox" value="${layer_name}" class="layer-checkbox"/>
+                        <span></span>
+                    </label>
+                </div>
+            </li>`
         );
     }
 
-    // Marco la capa Red Vial como activa en la lista
-    $('#layers-list a#red_vial').addClass('active');
+    // Marco la capa Red Vial como activa y visible en la lista
+    $('#layers-list a#red_vial').addClass('active').parent('li').addClass('active');
+    $('#layers-list input[value="red_vial"]').prop('checked', true);
 
     // Evento que llama a función que maneja el movimiento del puntero
     map.on('pointermove', pointerMoveHandler);

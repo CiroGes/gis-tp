@@ -105,7 +105,7 @@
     </nav>
 
     <!-- Barra lateral con lista de capas -->
-    <div class="col-sm-3 col-md-2 sidebar" style="z-index: 100; margin-top: 100px; padding-left: 30px;">
+    <div class="col-sm-4 col-md-3 sidebar" style="z-index: 100; margin-top: 100px; padding-left: 30px;">
         <div class="mini-submenu" style="background-color: #fff; border: 1px solid #ddd;">
             <span class="fas fa-lg fa-layer-group" style="margin-left: 2px; margin-top: 4px; color: #555;"></span>
         </div>
@@ -116,10 +116,10 @@
                     <i class="fa fa-times"></i>
                 </span>
             </span>
-            <div id="layers-list" style="height: 500px; overflow-y: scroll;">
+            <div id="layers-list" style="height: 350px; overflow-y: scroll;">
                 <!-- Acá se carga el listado de capas -->
             </div>
-            <div class="list-group-item">
+            <div class="list-group-item" style="padding: 0px 15px;">
                 <img id="layer-legend" src="http://osgeolive/cgi-bin/qgis_mapserv.fcgi?map=/home/user/Desktop/TP Integrador/tp-integrador.qgz&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=red_vial">
             </div>
         </div>
@@ -161,13 +161,23 @@
 
             $('.layer-item').click(function() {
                 let layer_name = $(this).attr('id');
+                let checkbox = $(this).parent('li').find('input[type="checkbox"]');
 
-                toggleLayerVisibility(layer_name);
                 toggleLayerActivity(layer_name);
                 toggleLegend(layer_name);
 
-                $('#layers-list').find('a.active').removeClass('active');
-                $(this).addClass('active');
+                $('#layers-list').find('a.active').removeClass('active').parent('li').removeClass('active');
+                $(this).addClass('active').parent('li').addClass('active');
+
+                if (!checkbox.prop('checked')) {
+                    checkbox.prop('checked', true);
+                    checkbox.trigger('change');
+                }
+            });
+
+            $('.layer-checkbox').change(function() {
+                let layer_name = $(this).val();
+                toggleLayerVisibility(layer_name);
             });
 
             select_interaction.on('boxend', function() {

@@ -115,51 +115,73 @@
 
 /**
  * Estilos traidos de ejemplo en Bootsnipp
- * https://bootsnipp.com/snippets/z8b8y
+ * https://bootsnipp.com/snippets/qr64D
  */
-/* .switch input {
-    display:none;
+.checkbox.checbox-switch {
+    padding-left: 0;
 }
 
-.switch {
-    display:inline-block;
-    width:30px;
-    height:15px;
-    margin:4px;
-    transform:translateY(50%);
-    position:relative;
+.checkbox.checbox-switch label,
+.checkbox-inline.checbox-switch {
+    display: inline-block;
+    position: relative;
+    padding-left: 0;
 }
 
-.slider {
-    position:absolute;
-    top:0;
-    bottom:0;
-    left:0;
-    right:0;
-    border-radius:15px;
-    box-shadow:0 0 0 1px #777, 0 0 2px #777;
-    cursor:pointer;
-    border:2px solid transparent;
-    overflow:hidden;
-    transition:.4s;
+.checkbox.checbox-switch label input,
+.checkbox-inline.checbox-switch input {
+    display: none;
 }
 
-.slider:before {
-    position:absolute;
-    content:"";
-    width:100%;
-    height:100%;
-    background:#777;
-    border-radius:15px;
-    transform:translateX(-15px);
-    transition:.4s;
+.checkbox.checbox-switch label span,
+.checkbox-inline.checbox-switch span {
+    width: 35px;
+    border-radius: 20px;
+    height: 18px;
+    border: 1px solid #dbdbdb;
+    background-color: #f44336;
+    border-color: #f44336;
+    box-shadow: rgb(223, 223, 223) 0px 0px 0px 0px inset;
+    transition: border 0.4s ease 0s, box-shadow 0.4s ease 0s;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
 }
 
-input:checked + .slider:before {
-    transform:translateX(15px);
-    background:limeGreen;
+.checkbox.checbox-switch label span:before,
+.checkbox-inline.checbox-switch span:before {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgb(255,255,255);
+    content: " ";
+    top: 0;
+    position: relative;
+    left: 0px;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    top:0px;
 }
 
-input:checked + .slider {
-    box-shadow:0 0 0 1px limeGreen,0 0 1px limeGreen;
-} */
+.checkbox.checbox-switch label > input:checked + span:before,
+.checkbox-inline.checbox-switch > input:checked + span:before {
+    left: 16px;top:0px;
+}
+
+/* Switch Primary */
+.checkbox.checbox-switch.switch-primary label > input:checked + span,
+.checkbox-inline.checbox-switch.switch-primary > input:checked + span {
+    background-color: #4caf50;
+    border-color: #4caf50;
+    /*box-shadow: rgb(0, 105, 217) 0px 0px 0px 8px inset;*/
+    transition: border 0.4s ease 0s, box-shadow 0.4s ease 0s, background-color 1.2s ease 0s;
+}
+
+.checkbox.checbox-switch.switch-primary label > input:checked:disabled + span,
+.checkbox-inline.checbox-switch.switch-primary > input:checked:disabled + span {
+    background-color: #f44336;
+    border-color: #f44336;
+    /* box-shadow: rgb(109, 163, 221) 0px 0px 0px 8px inset;*/
+    transition: border 0.4s ease 0s, box-shadow 0.4s ease 0s, background-color 1.2s ease 0s;
+}
