@@ -5,6 +5,8 @@ var source = new ol.source.Vector();
 var vector = new ol.layer.Vector({
     title: 'Mediciones',
     name: 'mediciones',
+    visible: 'true',
+    active: 'false',
     source: source,
     style: new ol.style.Style({
         fill: new ol.style.Fill({

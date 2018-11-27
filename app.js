@@ -15,6 +15,12 @@ var view;
 // Capa de prueba
 var red_vial;
 
+// Varbiales relacionadas al popup
+var container, content, closer, overlay;
+
+// XML parseado
+var xml;
+
 // Funcion que busca una capa por propiedad dada
 var findLayerBy = function(property, value) {
     return layers_ol.find(function(element) {
@@ -55,6 +61,34 @@ var findLayerBy = function(property, value) {
         let scale_line_ctrl = new ol.control.ScaleLine();
         scale_line_ctrl.setUnits('metric');
 
+        /**
+        * Elements that make up the popup.
+        */
+        container = document.getElementById('popup');
+        content = $('#popup-content');
+        closer = document.getElementById('popup-closer');
+
+        /**
+        * Create an overlay to anchor the popup to the map.
+        */
+        overlay = new ol.Overlay({
+            element: container,
+            autoPan: true,
+            autoPanAnimation: {
+                duration: 250
+            }
+        });
+
+        /**
+        * Add a click handler to hide the popup.
+        * @return {boolean} Don't follow the href.
+        */
+        closer.onclick = function() {
+            overlay.setPosition(undefined);
+            closer.blur();
+            return false;
+        };
+
         // Definición del mapa y su capa
         return new ol.Map({
             controls: ol.control.defaults().extend([
@@ -70,6 +104,7 @@ var findLayerBy = function(property, value) {
                     })
                 })
             ].concat(layers_ol),
+            overlays: [overlay],
             view: view = new ol.View({
                 projection: 'EPSG:4326',
                 center: [-59, -27.5],
@@ -130,10 +165,15 @@ var findLayerBy = function(property, value) {
             return;
         }
 
+        let coordinate = event.coordinate;
         let view_resolution = (view.getResolution());
 
+        var hdms = ol.coordinate.toStringHDMS(ol.proj.toLonLat(coordinate, 'EPSG:4326'));
+
+        content.html(`<p>Haz clickeado aquí:</p><code>${hdms}</code><br>`);
+
         let url = findLayerBy('active', true).getSource().getGetFeatureInfoUrl(
-            event.coordinate,
+            coordinate,
             view_resolution,
             'EPSG:4326',
             {
@@ -142,22 +182,33 @@ var findLayerBy = function(property, value) {
         );
 
         if (url) {
-            fetch(url).then(response => response.text()).then(function(data) {
-                console.log('URL: ' + url);
-                console.log(data);
-                console.log('---------------------------------------------');
+            fetch(url)
+            .then(response => response.text())
+            .then(function(data) {
+                let parsed_data = $.parseXML(data);
+                xml = $(parsed_data);
 
-                // let results = new ol.format.OSMXML().readFeatures(data);
-                // console.log(results);
+                let feature_id = xml.find('Feature').attr('id');
+                let feature_name = (xml.find('[name="nombre"]').attr('value')) ? xml.find('[name="nombre"]').attr('value') : 'Sin Datos';
+                let feature_type = (xml.find('[name="tipo"]').attr('value')) ? xml.find('[name="tipo"]').attr('value') : 'Sin Datos';
 
-                let parser = new DOMParser();
-                let xml_doc = parser.parseFromString(data, "text/xml");
-                console.log(xml_doc);
-
-                // let win = window.open(url, '_blank');
-                // win.focus();
-                // console.log('COORDENADAS: ' + event.coordinate);
-            });
+                if (feature_id) {
+                    content.append(
+                        `<br>
+                        <b>Feature Id: </b>${feature_id}<br>
+                        <b>Nombre: </b>${feature_name}<br>
+                        <b>Tipo: </b>${feature_type}`
+                    );
+                } else {
+                    content.append(
+                        `<br>
+                        <code>
+                            <b>Aquí no hay nada! :-(</b>
+                        </code>`
+                    );
+                }
+            })
+            .then(() => { overlay.setPosition(coordinate); });
         }
     });
 

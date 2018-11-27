@@ -49,8 +49,8 @@
                     --><span class="red logo">i</span><!--
                     --><span class="yellow logo">b</span><!--
                     --><span class="blue logo">e</span><!--
-                    --><span  class="green logo">'</span><!--
-                    --><span  class="red logo">s</span>
+                    --><span class="green logo">'</span><!--
+                    --><span class="red logo">s</span>
                     <span style="font-size: 15px;">Maps</span>
                 </a>
             </div>
@@ -111,6 +111,12 @@
 
     <div id="map">
         <!-- DIV que contiene el mapa -->
+    </div>
+
+    <!-- Popup -->
+    <div id="popup" class="ol-popup">
+      <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+      <div id="popup-content"></div>
     </div>
 
 
@@ -231,8 +237,6 @@
                 map.removeInteraction(select_interaction);
                 addInteraction();
             }
-
-            console.log(element);
         };
 
 
