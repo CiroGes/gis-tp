@@ -44,41 +44,24 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="#">
-                    <span class="fas fa-map"></span>
-                    <span class="blue logo">P</span>
-                    <span class="red logo">i</span>
-                    <span class="yellow logo">b</span>
-                    <span class="blue logo">e</span>
-                    <span  class="green logo">'s</span>
-                    Map
+                    <span class="fas fa-map fa-lg"></span>
+                    <span class="blue logo">P</span><!--
+                    --><span class="red logo">i</span><!--
+                    --><span class="yellow logo">b</span><!--
+                    --><span class="blue logo">e</span><!--
+                    --><span  class="green logo">'</span><!--
+                    --><span  class="red logo">s</span>
+                    <span style="font-size: 15px;">Map</span>
                 </a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <!-- <li><a href="#">Link <span class="sr-only">(current)</span></a></li>
-                    <li><a href="#">Link</a></li> -->
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Main Layers <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#" id="red_vial" class="main-layers">
-                                <span class="blue logo">Red Vial</span>
-                            </a></li>
-                            <li><a href="#" id="espejo_de_agua_hid" class="main-layers">
-                                <span class="red logo">Espejos de Agua</span>
-                            </a></li>
-                            <li><a href="#" id="veg_cultivos" class="main-layers">
-                                <span class="red logo">Vegetación Cultivos</span>
-                            </a></li>
-                            <li><a href="#" id="veg_arborea" class="main-layers">
-                                <span class="red logo">Vegetación Arbórea</span>
-                            </a></li>
-                            <li><a href="#" id="veg_hidrofila" class="main-layers">
-                                <span class="red logo">Vegetación Hidrófila</span>
-                            </a></li>
-                        </ul>
-                    </li>
+                    <p class="navbar-text" style="margin-left: 5px;">
+                        <b>Herramientas </b><span class="fas fa-caret-right"></span>
+                    </p>
+
                     <li class="active">
                         <a href="#" id="nav-ctrl" class="select-ctrl" title="Navegación">
                             <span class="fas fa-lg fa-hand-paper"></span>
@@ -106,7 +89,7 @@
 
     <!-- Barra lateral con lista de capas -->
     <div class="col-sm-4 col-md-3 sidebar" style="z-index: 100; margin-top: 100px; padding-left: 30px;">
-        <div class="mini-submenu" style="background-color: #fff; border: 1px solid #ddd;">
+        <div class="mini-submenu" style="background-color: #fff; border: 1px solid #ddd;" title="Capas">
             <span class="fas fa-lg fa-layer-group" style="margin-left: 2px; margin-top: 4px; color: #555;"></span>
         </div>
         <div class="list-group" style="display: none;">
@@ -144,14 +127,6 @@
                 $('.mini-submenu').hide();
             })
 
-            $('.main-layers').click(function() {
-                // Habilito/Deshabilito una capa
-                toggleLayerVisibility($(this).attr('id'));
-
-                // Cambio estéticamente el botón
-                $(this).find('span').toggleClass('red blue');
-            });
-
             $('.select-ctrl').click(function() {
                 $('ul.nav.navbar-nav').find('li.active').removeClass('active');
                 $(this).parent().addClass('active');
@@ -186,7 +161,7 @@
                 console.log('boxend', coordinates);
                 console.log(wkt_coordinates);
 
-                let layer_name = findLayerBy('visible', true).getProperties().name;
+                let layer_name = findLayerBy('active', true).getProperties().name;
 
                 // Template string example
                 // `Hello ${name}, how are you ${time}?`
@@ -265,7 +240,7 @@
         var toggleLegend = function(layer_name) {
             let url_legend = url + `&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=${layer_name}`;
             $('#layer-legend').attr('src', url_legend);
-        }
+        };
 
 
         // Definición de una interacción

@@ -132,7 +132,7 @@ var findLayerBy = function(property, value) {
 
         let view_resolution = (view.getResolution());
 
-        let url = findLayerBy('visible', true).getSource().getGetFeatureInfoUrl(
+        let url = findLayerBy('active', true).getSource().getGetFeatureInfoUrl(
             event.coordinate,
             view_resolution,
             'EPSG:4326',
