@@ -184,7 +184,7 @@ var findLayerBy = function(property, value) {
         if (url) {
             fetch(url)
             .then(response => response.text())
-            .then(function(data) {
+            .then(data => {
                 let parsed_data = $.parseXML(data);
                 xml = $(parsed_data);
 

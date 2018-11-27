@@ -30,9 +30,14 @@
 
     <!-- más íconos de fontawesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+
+    <!-- agregado DataTables al proyecto -->
+    <!-- <link rel="stylesheet" type="text/css" href="datatables/datatables.min.css"/>
+    <script type="text/javascript" src="datatables/datatables.min.js"></script> -->
 </head>
 
 <body>
+
     <nav class="navbar navbar-default" id="nav_bar">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -87,6 +92,7 @@
         </div><!-- /.container-fluid -->
     </nav>
 
+
     <!-- Barra lateral con lista de capas -->
     <div class="col-sm-4 col-md-3 sidebar" style="z-index: 100; margin-top: 100px; padding-left: 30px;">
         <div class="mini-submenu" style="background-color: #fff; border: 1px solid #ddd;" title="Capas">
@@ -109,9 +115,44 @@
     </div>
 
 
+    <!-- Modal para mostrar resultados -->
+    <div class="modal fade" id="modal-features" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title text-center" id="myModalLabel">Resultados de la Consulta</h4>
+                </div>
+                <div class="modal-body" id="modal-body-features" style="height: 450px; overflow-y: scroll;">
+                    <table class="table table-condensed table-striped">
+                        <thead>
+                            <th>#</th>
+                            <th>Feature Id</th>
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                        </thead>
+                        <tbody id="tbody-features">
+                            <!-- load de resultados -->
+                            <!-- <tr>
+                                <td>4567</td>
+                                <td>Resistencia</td>
+                                <td>Un elefante se columpiaba sobre la tela de una araña.</td>
+                            </tr> -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div id="map">
         <!-- DIV que contiene el mapa -->
     </div>
+
 
     <!-- Popup -->
     <div id="popup" class="ol-popup">
@@ -164,29 +205,45 @@
             select_interaction.on('boxend', function() {
                 let coordinates = this.getGeometry().getCoordinates();
                 let wkt_coordinates = wktFormat(coordinates);
-                console.log('boxend', coordinates);
-                console.log(wkt_coordinates);
-
                 let layer_name = findLayerBy('active', true).getProperties().name;
 
-                // Template string example
-                // `Hello ${name}, how are you ${time}?`
-                let url_features = url + `&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&QUERY_LAYERS=${layer_name}&INFO_FORMAT=text/xml&CRS=EPSG%3A4326&FEATURE_COUNT=10&FILTER_GEOM=${wkt_coordinates}`;
+                let url_features = url
+                + '&SERVICE=WMS'
+                + '&VERSION=1.3.0'
+                + '&REQUEST=GetFeatureInfo'
+                + '&CRS=EPSG%3A4326'
+                + '&INFO_FORMAT=text/xml'
+                + '&FEATURE_COUNT=50'
+                + `&QUERY_LAYERS=${layer_name}`
+                + `&FILTER_GEOM=${wkt_coordinates}`;
 
                 fetch(url_features)
                 .then(response => response.text())
                 .then(data => {
-                    console.log('URL: ' + url_features);
-                    console.log(data);
-                    console.log('---------------------------------------------');
+                    let parsed_data = $.parseXML(data);
+                    let xml = $(parsed_data);
 
-                    let parser = new DOMParser();
-                    let xml_doc = parser.parseFromString(data, "text/xml");
-                    console.log(xml_doc);
+                    // Limpio la tabla antes de cargar nuevos resultados
+                    $('#tbody-features').html('');
 
-                    // let win = window.open(url, '_blank');
-                    // win.focus();
-                });
+                    xml.find('Feature').each(function(index) {
+                        let feature_id = $(this).attr('id');
+                        let feature_name = ($(this).find('[name="nombre"]').attr('value')) ? $(this).find('[name="nombre"]').attr('value') : 'Sin Datos';
+                        let feature_type = ($(this).find('[name="tipo"]').attr('value')) ? $(this).find('[name="tipo"]').attr('value') : 'Sin Datos';
+
+                        // console.log(feature_id + '; ' + feature_name + '; ' + feature_type);
+
+                        $('#tbody-features').append(
+                            `<tr>
+                                <td>${index + 1}</td>
+                                <td>${feature_id}</td>
+                                <td>${feature_name}</td>
+                                <td>${feature_type}</td>
+                            </tr>`
+                        );
+                    });
+                })
+                .then(() => { $('#modal-features').modal('show'); });
             });
         }); // Fin $(document).ready()
 
