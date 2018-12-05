@@ -40,12 +40,11 @@ var findLayerBy = function(property, value) {
                 new ol.layer.Image({
                     title: layer.Title,
                     name: layer.Name,
-                    // Capas desactivadas por defecto
                     visible: false,
-                    // Agrego concepto de 'capa activa'
                     active: false,
                     source: new ol.source.ImageWMS({
                         url: url,
+                        crossOrigin: 'anonymous',
                         params: {
                             LAYERS: layer.Name
                         }
@@ -56,6 +55,9 @@ var findLayerBy = function(property, value) {
 
         // Agrego capa para dibujar medidas
         layers_ol.push(vector);
+
+        // Agrego capa para mostrar eltos a agregar
+        layers_ol.push(vector_draw);
 
         // Definición de barra de escala
         let scale_line_ctrl = new ol.control.ScaleLine();
@@ -95,9 +97,19 @@ var findLayerBy = function(property, value) {
                 scale_line_ctrl
             ]),
             target: 'map',
-            layers: [
+            layers: layers_ol = [
                 new ol.layer.Tile({
-                    title: "Natural Earth Base Map",
+                    title: 'OpenStreetMap Layer',
+                    name: 'osm_layer',
+                    visible: true,
+                    active: false,
+                    source: new ol.source.OSM()
+                }),
+                new ol.layer.Tile({
+                    title: 'Natural Earth Base Map',
+                    name: 'base_layer',
+                    visible: false,
+                    active: false,
                     source: new ol.source.TileWMS({
                         url: 'http://demo.boundlessgeo.com/geoserver/wms',
                         params: {'LAYERS': 'ne:ne'}
@@ -130,6 +142,8 @@ var findLayerBy = function(property, value) {
     for (let layer of layers_ol) {
         let layer_title = layer.getProperties().title;
         let layer_name = layer.getProperties().name;
+        let checked = (layer.getVisible()) ? 'checked' : '';
+
         $('#layers-list').append(
             `<li class="list-group-item row" style="margin-left: 0px; margin-right: 0px;">
                 <a href="#" id="${layer_name}" class="list-group-item layer-item col-md-10" style="border: 0; padding: 0;">
@@ -137,7 +151,7 @@ var findLayerBy = function(property, value) {
                 </a>
                 <div class="checkbox checbox-switch switch-primary col-md-2" style="margin-top: 0px; margin-bottom: 0px;">
                     <label>
-                        <input type="checkbox" value="${layer_name}" class="layer-checkbox"/>
+                        <input type="checkbox" value="${layer_name}" class="layer-checkbox" ${checked}/>
                         <span></span>
                     </label>
                 </div>
@@ -145,9 +159,8 @@ var findLayerBy = function(property, value) {
         );
     }
 
-    // Marco la capa Red Vial como activa y visible en la lista
+    // Marco la capa Red Vial como activa en la lista
     $('#layers-list a#red_vial').addClass('active').parent('li').addClass('active');
-    $('#layers-list input[value="red_vial"]').prop('checked', true);
 
     // Evento que llama a función que maneja el movimiento del puntero
     map.on('pointermove', pointerMoveHandler);
@@ -212,8 +225,25 @@ var findLayerBy = function(property, value) {
         }
     });
 
+    map.on('pointermove', function(event) {
+        if (event.dragging) {
+            return;
+        }
+
+        let pixel = map.getEventPixel(event.originalEvent);
+        let hit = map.forEachLayerAtPixel(pixel, function(layer) {
+            if (layer.getProperties().name === 'osm_layer' || layer.getProperties().name === 'base_layer') {
+                return false;
+            }
+
+            return layer.getActive();
+        });
+        map.getTargetElement().style.cursor = hit ? 'pointer' : '';
+    });
+
     let zoom_ctrl = $('.ol-zoom');
 
-    zoom_ctrl.css('bottom', zoom_ctrl.css('top')).css('right', zoom_ctrl.css('left'));
+    // zoom_ctrl.css('bottom', zoom_ctrl.css('top')).css('right', zoom_ctrl.css('left'));
+    zoom_ctrl.css('bottom', '2.5em').css('right', '.5em');
     zoom_ctrl.css('top', 'unset').css('left', 'unset');
 })();
