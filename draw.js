@@ -1,10 +1,18 @@
 //
 //
 var draw_form = `
-    <div class="">
-        <input type="text" id="name" placeholder="Nombre">
-        <input type="text" id="type" placeholder="Tipo">
-        <input type="button" id="send" value="Agregar">
+    <div>
+        <div class="form-group">
+            <label for="name">Nombre de Feature</label>
+            <input type="text" class="form-control" id="name" placeholder="Nombre">
+        </div>
+
+        <div class="form-group">
+            <label for="type">Tipo de Feature</label>
+            <input type="text" class="form-control" id="type" placeholder="Tipo">
+        </div>
+
+        <button type="button" class="btn btn-success pull-right" id="send">Agregar</button>
     </div>
 `;
 
@@ -14,9 +22,14 @@ var vector_draw = new ol.layer.Vector({
     name: 'draw_layer',
     title: 'Draw Layer',
     active: false,
-    visible: true,
+    visible: false,
     source: source_draw
 });
+
+// Defino para que no de error
+ol.layer.Vector.prototype.getActive = function() {
+    return this.O.active;
+};
 
 var draw_element; // global so we can remove it later
 
@@ -45,7 +58,15 @@ function addDrawInteraction() {
                     'coordinates': wkt_coordinates
                 },
                 success: function(response) {
-                    alert(response);
+                    $('#popup-closer').trigger('click');
+
+                    if (response) {
+                        alert('Registro insertado con éxito');
+                    } else {
+                        alert('Hubo un error. Vuelva a intentar');
+                    }
+
+                    findLayerBy('name', 'cervecerias_artesanales').getSource().refresh();
                 }
             });
         });

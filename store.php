@@ -18,3 +18,5 @@ VALUES ('$name', '$type', ST_geomfromtext('$wkt', 4326))
 EOD;
 
 $result = pg_query($query);
+
+echo pg_result_status($result);
