@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>OpenLayers 4 example</title>
+    <title>Pibe's Map</title>
 
-    <!-- archivo CSS con los estilos propios de OpenLayers (href con ruta relativa) -->
+    <!-- archivo CSS con los estilos propios de OpenLayers -->
     <link rel="stylesheet" href="ol4/css/ol.css" type="text/css">
 
     <!-- agregado JQuery -->
@@ -19,42 +19,345 @@
     <!-- tag script que incluye el archivo .js que contiene la libreria -->
     <script src="ol4/build/ol.js" type="text/javascript"></script>
 
-    <!-- estilos CSS definidos dentro del documento -->
-    <style>
-        #map {
-            height: 400px;	/* alto del elemento = 400px */
-            width: 100%;	/* ancho del elemento = 100% de su elemento contenedor */
-            border: 1px solid; /* borde 1px */
-        }
-    </style>
+    <!-- script para agregar eltos a capa (puntos) -->
+    <script src="draw.js" type="text/javascript"></script>
+
+    <!-- script para realizar mediciones -->
+    <script src="measure.js" type="text/javascript"></script>
+
+    <!-- script encargado de instanciar OpenLayers -->
+    <script src="app.js" type="text/javascript"></script>
+
+    <!-- estilos CSS de la aplicación -->
+    <link rel="stylesheet" href="style.css" type="text/css">
+
+    <!-- más íconos de fontawesome -->
+    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous"> -->
+    <link href="fontawesome/css/all.css" rel="stylesheet">
+
+    <!-- agregado DataTables al proyecto -->
+    <!-- <link rel="stylesheet" type="text/css" href="datatables/datatables.min.css"/>
+    <script type="text/javascript" src="datatables/datatables.min.js"></script> -->
 </head>
 
 <body>
-    <!-- tag H1 con un texto -->
-    <h1>My Map</h1>
 
-    <!-- DIV que contiene el mapa -->
-    <div id="map"></div>
+    <nav class="navbar navbar-default" id="nav_bar">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">
+                    <span class="fas fa-map"></span>
+                    <span class="blue logo">P</span><!--
+                    --><span class="red logo">i</span><!--
+                    --><span class="yellow logo">b</span><!--
+                    --><span class="blue logo">e</span><!--
+                    --><span class="green logo">'</span><!--
+                    --><span class="red logo">s</span>
+                    <span style="font-size: 15px;">Maps</span>
+                </a>
+            </div>
 
-    <!-- SCRIPT que crea el mapa y sus capas -->
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <p class="navbar-text" style="margin-left: 5px;">
+                        <b>Herramientas </b><span class="fas fa-caret-right"></span>
+                    </p>
+
+                    <li class="active">
+                        <a href="#" id="nav-ctrl" class="select-ctrl" title="Navegación">
+                            <span class="fas fa-lg fa-hand-paper"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="box-ctrl" class="select-ctrl" title="Consulta">
+                            <span class="fas fa-lg fa-vector-square"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="measure-length-ctrl" class="select-ctrl" title="Medir distancia">
+                            <span class="fas fa-lg fa-ruler-horizontal"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="measure-area-ctrl" class="select-ctrl" title="Medir área">
+                            <span class="fas fa-lg fa-ruler-combined"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="edit-ctrl" class="select-ctrl" title="Editar Capa">
+                            <span class="fas fa-lg fa-edit"></span>
+                        </a>
+                    </li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+
+
+    <!-- Barra lateral con lista de capas -->
+    <div class="col-sm-4 col-md-3 sidebar" style="z-index: 100; margin-top: 70px; padding-left: 30px;">
+        <div class="mini-submenu" style="background-color: #fff; border: 1px solid #ddd;" title="Capas">
+            <span class="fas fa-lg fa-layer-group" style="margin-left: 2px; margin-top: 4px; color: #555;"></span>
+        </div>
+        <div class="list-group" style="display: none;">
+            <span href="#" class="list-group-item active text-center" style="padding: 5px 15px;">
+                <b>Listado de Capas</b>
+                <span class="pull-right" id="slide-submenu">
+                    <i class="fa fa-times"></i>
+                </span>
+            </span>
+            <div id="layers-list" style="height: 300px; overflow-y: scroll;">
+                <!-- Acá se carga el listado de capas -->
+            </div>
+            <div class="list-group-item" style="padding: 0px 15px; overflow-x: hidden;">
+                <a href="#" id="anchor-layer-legend">
+                    <img id="layer-legend" src="http://osgeolive/cgi-bin/qgis_mapserv.fcgi?map=/home/user/Desktop/TP Integrador/tp-integrador.qgz&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=red_vial">
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal para mostrar imagen agrandada -->
+    <div class="modal fade" id="modal-img" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title text-center">Referencia Ampliada</h4>
+                </div>
+                <div class="modal-body" id="modal-body-img">
+                    <img id="layer-legend-expanded" src="http://osgeolive/cgi-bin/qgis_mapserv.fcgi?map=/home/user/Desktop/TP Integrador/tp-integrador.qgz&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=red_vial">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal para mostrar resultados -->
+    <div class="modal fade" id="modal-features" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title text-center" id="myModalLabel">Resultados de la Consulta</h4>
+                </div>
+                <div class="modal-body" id="modal-body-features" style="height: 450px; overflow-y: scroll;">
+                    <table class="table table-condensed table-striped">
+                        <thead>
+                            <th>#</th>
+                            <th>Feature Id</th>
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                        </thead>
+                        <tbody id="tbody-features">
+                            <!-- load de resultados -->
+                            <!-- <tr>
+                                <td>4567</td>
+                                <td>Resistencia</td>
+                                <td>Un elefante se columpiaba sobre la tela de una araña.</td>
+                            </tr> -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="map">
+        <!-- DIV que contiene el mapa -->
+    </div>
+
+
+    <!-- Popup -->
+    <div id="popup" class="ol-popup">
+      <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+      <div id="popup-content"></div>
+    </div>
+
+
     <script type="text/javascript">
+        $(document).ready(function() {
+            $('#slide-submenu').on('click',function() {
+                $(this).closest('.list-group').fadeOut('slide',function(){
+                    $('.mini-submenu').fadeIn();
+                });
+            });
 
-        // definicion del mapa y su capa
-        var map = new ol.Map({
-            target: 'map',
-            layers: [
-                new ol.layer.Tile({
-                    title: "Natural Earth Base Map",
-                    source: new ol.source.TileWMS({
-                        url: 'http://demo.boundlessgeo.com/geoserver/wms',
-                        params: {'LAYERS': 'ne:ne'}
-                    })
+            $('.mini-submenu').on('click',function(){
+                $(this).next('.list-group').toggle('slide');
+                $('.mini-submenu').hide();
+            })
+
+            $('.select-ctrl').click(function() {
+                $('ul.nav.navbar-nav').find('li.active').removeClass('active');
+                $(this).parent().addClass('active');
+
+                seleccionarControl($(this).attr('id'));
+            });
+
+            $('#layers-list').on('click', '.layer-item', function() {
+                let layer_name = $(this).attr('id');
+                let checkbox = $(this).parent('li').find('input[type="checkbox"]');
+
+                if (layer_name !== 'osm_layer' && layer_name !== 'base_layer') {
+                    toggleLayerActivity(layer_name);
+                    toggleLegend(layer_name);
+
+                    $('#layers-list').find('a.active').removeClass('active').parent('li').removeClass('active');
+                    $(this).addClass('active').parent('li').addClass('active');
+
+                    if (!checkbox.prop('checked')) {
+                        checkbox.prop('checked', true);
+                        checkbox.trigger('change');
+                    }
+                } else {
+                    alert('Funcionalidad capa activa no soportada para capas bases');
+                }
+            });
+
+            $('#layers-list').on('change', '.layer-checkbox', function() {
+                let layer_name = $(this).val();
+                toggleLayerVisibility(layer_name);
+            });
+
+            $('#anchor-layer-legend').click(function () {
+                let link = $(this).find('img').attr('src');
+                $('#layer-legend-expanded').attr('src', link);
+
+                $('#modal-img').modal('show');
+            });
+
+            select_interaction.on('boxend', function() {
+                let coordinates = this.getGeometry().getCoordinates();
+                let wkt_coordinates = wktFormat(coordinates);
+                let layer_name = findLayerBy('active', true).getProperties().name;
+
+                let url_features = url
+                + '&SERVICE=WMS'
+                + '&VERSION=1.3.0'
+                + '&REQUEST=GetFeatureInfo'
+                + '&CRS=EPSG%3A4326'
+                + '&INFO_FORMAT=text/xml'
+                + '&FEATURE_COUNT=50'
+                + `&QUERY_LAYERS=${layer_name}`
+                + `&FILTER_GEOM=${wkt_coordinates}`;
+
+                fetch(url_features)
+                .then(response => response.text())
+                .then(data => {
+                    let parsed_data = $.parseXML(data);
+                    let xml = $(parsed_data);
+
+                    // Limpio la tabla antes de cargar nuevos resultados
+                    $('#tbody-features').html('');
+
+                    xml.find('Feature').each(function(index) {
+                        let feature_id = $(this).attr('id');
+                        let feature_name = ($(this).find('[name="nombre"]').attr('value')) ? $(this).find('[name="nombre"]').attr('value') : 'Sin Datos';
+                        let feature_type = ($(this).find('[name="tipo"]').attr('value')) ? $(this).find('[name="tipo"]').attr('value') : 'Sin Datos';
+
+                        $('#tbody-features').append(
+                            `<tr>
+                                <td>${index + 1}</td>
+                                <td>${feature_id}</td>
+                                <td>${feature_name}</td>
+                                <td>${feature_type}</td>
+                            </tr>`
+                        );
+                    });
                 })
-            ],
-            view: new ol.View({
-                projection: 'EPSG:4326',
-                center: [-59, -27.5],
-                zoom: 4
+                .then(() => { $('#modal-features').modal('show'); });
+            });
+        }); // Fin $(document).ready()
+
+
+        // Funcion que habilita/deshabilita una capa con el nombre dado
+        var toggleLayerVisibility = function(layer_name) {
+            let layer = findLayerBy('name', layer_name);
+
+            layer.setVisible(!layer.getVisible());
+            return layer.getVisible();
+        };
+
+
+        // Funcion que cambia la capa activa
+        var toggleLayerActivity = function(layer_name) {
+            // Primero desactivo la que esté activada
+            findLayerBy('active', true).setActive(false);
+            let layer = findLayerBy('name', layer_name);
+
+            return layer.setActive(!layer.getActive());
+        };
+
+
+        // Funcion que formatea un poligono a WKT
+        var wktFormat = function(coordinates) {
+            let wkt = 'POLYGON((';
+
+    		for (let i = 0; i < coordinates[0].length - 1; i++) {
+    			wkt += coordinates[0][i][0] + ' ' + coordinates[0][i][1] + ',';
+    		}
+
+    		wkt += coordinates[0][0][0] + ' ' + coordinates[0][0][1]+'))';
+
+            return wkt;
+        };
+
+
+        // Funcion que habilita/deshabilita controles
+        var seleccionarControl = function(element) {
+            if (element === 'box-ctrl') {    // Consulta por Polígono
+                map.removeInteraction(draw);
+                map.removeInteraction(draw_element);
+                map.addInteraction(select_interaction);
+            } else if (element === 'nav-ctrl') {    // Navegación
+                map.removeInteraction(draw);
+                map.removeInteraction(draw_element);
+                map.removeInteraction(select_interaction);
+            } else if (element === 'measure-length-ctrl' || element === 'measure-area-ctrl') {    // Medición de distancias y áreas
+                map.removeInteraction(draw);
+                map.removeInteraction(draw_element);
+                map.removeInteraction(select_interaction);
+                addInteraction();
+            } else if (element === 'edit-ctrl') {    // Agregar eltos nuevos a una capa (de puntos)
+                map.removeInteraction(draw);
+                map.removeInteraction(select_interaction);
+                map.removeInteraction(draw_element);
+                addDrawInteraction();
+            }
+        };
+
+
+        // Función que habilita/deshabilita legenda de una capa
+        var toggleLegend = function(layer_name) {
+            let url_legend = url + `&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=${layer_name}`;
+            $('#layer-legend').attr('src', url_legend);
+        };
+
+
+        // Definición de una interacción
+        var select_interaction = new ol.interaction.DragBox({
+            condition: ol.events.condition.always, //noModifierKeys
+            style: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: [0, 0, 255, 1]
+                })
             })
         });
     </script>

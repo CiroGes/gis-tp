@@ -1,0 +1,36 @@
+<GetFeatureInfoResponse>
+    <Layer name="localidades">
+        <Feature id="5648">
+            <Attribute name="gid" value="5,648"/>
+            <Attribute name="nombre" value="Resistencia"/>
+            <Attribute name="tipo" value="Capital de Provincia"/>
+            <Attribute name="precisión" value="Definido"/>
+            <Attribute name="escala" value="Mapas Mayor e Igual a 1:1000000"/>
+            <Attribute name="signo" value="73,002"/>
+            <Attribute name="fuente" value="IGN"/>
+            <Attribute name="operador" value="Gutierrez"/>
+            <Attribute name="dataset" value="Localidad"/>
+            <Attribute name="fclass" value="Localidad"/>
+            <Attribute name="responsabl" value="Sergio Cimbaro"/>
+            <Attribute name="cargo" value="Dir. Gral. Serv. Geográfico"/>
+            <Attribute name="progreso" value=""/>
+            <Attribute name="t_act" value=""/>
+            <Attribute name="coord" value=""/>
+            <Attribute name="sp" value="Posgra94"/>
+            <Attribute name="datum" value="WGS 84"/>
+            <Attribute name="ac" value="2010"/>
+            <Attribute name="provincia" value="Chaco"/>
+            <Attribute name="departamen" value="San Fernando"/>
+            <Attribute name="coddepto" value=""/>
+            <Attribute name="codloc" value=""/>
+            <Attribute name="canthab" value="274,490"/>
+            <Attribute name="cell_name" value=""/>
+            <Attribute name="igds_type" value="0"/>
+            <Attribute name="igds_weigh" value="0"/>
+            <Attribute name="rotation" value="0"/>
+            <Attribute name="igds_color" value="0"/>
+            <Attribute name="group" value="0"/>
+            <Attribute name="igds_level" value="0"/>
+        </Feature>
+    </Layer>
+</GetFeatureInfoResponse>
