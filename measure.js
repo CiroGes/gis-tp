@@ -1,24 +1,34 @@
+import VectorSource from 'ol/source/Vector';
+import VectorLayer from 'ol/layer/Vector';
+import {Style, Fill, Stroke, Circle} from 'ol/style';
+import {LineString, Polygon} from 'ol/geom';
+import {getArea, getLength} from 'ol/sphere';
+import {unByKey} from 'ol/Observable';
+import Overlay from 'ol/Overlay';
+import Draw from 'ol/interaction/Draw';
+import {map} from './app.js'
+
 // Source de la capa vectorial
-var source = new ol.source.Vector();
+var source = new VectorSource();
 
 // Capa vectorial donde se dibujan las líneas de medición
-var vector = new ol.layer.Vector({
+export var vector = new VectorLayer({
     title: 'Mediciones',
     name: 'mediciones',
     visible: true,
     active: false,
     source: source,
-    style: new ol.style.Style({
-        fill: new ol.style.Fill({
+    style: new Style({
+        fill: new Fill({
             color: 'rgba(255, 255, 255, 0.2)'
         }),
-        stroke: new ol.style.Stroke({
+        stroke: new Stroke({
             color: '#ffcc33',
             width: 2
         }),
-        image: new ol.style.Circle({
+        image: new Circle({
             radius: 20,
-            fill: new ol.style.Fill({
+            fill: new Fill({
                 color: '#ffcc33'
             })
         })
@@ -35,7 +45,7 @@ var sketch;
 * The help tooltip element.
 * @type {Element}
 */
-var helpTooltipElement;
+export var helpTooltipElement;
 
 /**
 * Overlay to show the help messages.
@@ -71,7 +81,7 @@ var continueLineMsg = 'Click para continuar dibujando la línea';
 * Handle pointer move.
 * @param {module:ol/MapBrowserEvent~MapBrowserEvent} evt The event.
 */
-var pointerMoveHandler = function(evt) {
+export var pointerMoveHandler = function(evt) {
     if (evt.dragging) {
         return;
     }
@@ -80,9 +90,9 @@ var pointerMoveHandler = function(evt) {
 
     if (sketch) {
         var geom = (sketch.getGeometry());
-        if (geom instanceof ol.geom.Polygon) {
+        if (geom instanceof Polygon) {
             helpMsg = continuePolygonMsg;
-        } else if (geom instanceof ol.geom.LineString) {
+        } else if (geom instanceof LineString) {
             helpMsg = continueLineMsg;
         }
     }
@@ -104,7 +114,7 @@ var pointerMoveHandler = function(evt) {
 */
 var typeSelect = document.getElementById('type');
 
-var draw; // global so we can remove it later
+export var draw; // global so we can remove it later
 
 
 /**
@@ -113,7 +123,7 @@ var draw; // global so we can remove it later
 * @return {string} The formatted length.
 */
 var formatLength = function(line) {
-    var length = ol.Sphere.getLength(line, {
+    var length = getLength(line, {
         'projection': 'EPSG:4326'
     });
     var output;
@@ -134,7 +144,7 @@ var formatLength = function(line) {
 * @return {string} Formatted area.
 */
 var formatArea = function(polygon) {
-    var area = ol.Sphere.getArea(polygon, {
+    var area = getArea(polygon, {
         'projection': 'EPSG:4326'
     });
     var output;
@@ -150,28 +160,28 @@ var formatArea = function(polygon) {
 
 
 // Función que añade la interración al mapa según lo seleccionado
-function addInteraction() {
+export function addInteraction() {
     var active_element = $('ul.nav.navbar-nav').find('li.active').children().attr('id');
     var type = (active_element === 'measure-length-ctrl') ? 'LineString' : 'Polygon';
 
-    draw = new ol.interaction.Draw({
+    draw = new Draw({
         source: source,
         type: type,
-        style: new ol.style.Style({
-            fill: new ol.style.Fill({
+        style: new Style({
+            fill: new Fill({
                 color: 'rgba(255, 255, 255, 0.2)'
             }),
-            stroke: new ol.style.Stroke({
+            stroke: new Stroke({
                 color: 'rgba(0, 0, 0, 0.5)',
                 lineDash: [10, 10],
                 width: 2
             }),
-            image: new ol.style.Circle({
+            image: new Circle({
                 radius: 5,
-                stroke: new ol.style.Stroke({
+                stroke: new Stroke({
                     color: 'rgba(0, 0, 0, 0.7)'
                 }),
-                fill: new ol.style.Fill({
+                fill: new Fill({
                     color: 'rgba(255, 255, 255, 0.2)'
                 })
             })
@@ -194,10 +204,10 @@ function addInteraction() {
         listener = sketch.getGeometry().on('change', function(evt) {
             var geom = evt.target;
             var output;
-            if (geom instanceof ol.geom.Polygon) {
+            if (geom instanceof Polygon) {
                 output = formatArea(geom);
                 tooltipCoord = geom.getInteriorPoint().getCoordinates();
-            } else if (geom instanceof ol.geom.LineString) {
+            } else if (geom instanceof LineString) {
                 output = formatLength(geom);
                 tooltipCoord = geom.getLastCoordinate();
             }
@@ -215,7 +225,7 @@ function addInteraction() {
         // unset tooltip so that a new one can be created
         measureTooltipElement = null;
         createMeasureTooltip();
-        ol.Observable.unByKey(listener);
+        unByKey(listener);
     }, this);
 }
 
@@ -223,13 +233,13 @@ function addInteraction() {
 /**
 * Creates a new help tooltip
 */
-function createHelpTooltip() {
+export function createHelpTooltip() {
     if (helpTooltipElement) {
         helpTooltipElement.parentNode.removeChild(helpTooltipElement);
     }
     helpTooltipElement = document.createElement('div');
     helpTooltipElement.className = 'tooltip hidden';
-    helpTooltip = new ol.Overlay({
+    helpTooltip = new Overlay({
         element: helpTooltipElement,
         offset: [15, 0],
         positioning: 'center-left'
@@ -247,7 +257,7 @@ function createMeasureTooltip() {
     }
     measureTooltipElement = document.createElement('div');
     measureTooltipElement.className = 'tooltip tooltip-measure';
-    measureTooltip = new ol.Overlay({
+    measureTooltip = new Overlay({
         element: measureTooltipElement,
         offset: [0, -15],
         positioning: 'bottom-center'

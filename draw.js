@@ -1,5 +1,7 @@
-//
-//
+import VectorSource from 'ol/source/Vector';
+import VectorLayer from 'ol/layer/Vector';
+import Draw from 'ol/interaction/Draw';
+
 var draw_form = `
     <div>
         <div class="form-group">
@@ -16,9 +18,9 @@ var draw_form = `
     </div>
 `;
 
-var source_draw = new ol.source.Vector({wrapX: false});
+var source_draw = new VectorSource({wrapX: false});
 
-var vector_draw = new ol.layer.Vector({
+export var vector_draw = new VectorLayer({
     name: 'draw_layer',
     title: 'Draw Layer',
     active: false,
@@ -27,14 +29,14 @@ var vector_draw = new ol.layer.Vector({
 });
 
 // Defino para que no de error
-ol.layer.Vector.prototype.getActive = function() {
+VectorLayer.prototype.getActive = function() {
     return this.O.active;
 };
 
-var draw_element; // global so we can remove it later
+export var draw_element; // global so we can remove it later
 
-function addDrawInteraction() {
-    draw_element = new ol.interaction.Draw({
+export function addDrawInteraction() {
+    draw_element = new Draw({
         source: source_draw,
         type: 'Point'
     });
